@@ -111,7 +111,7 @@ function Home() {
         </motion.div>
       </section>
 
-      {/* Intro */}
+      {/* Portfolio CTA */}
       <section className="py-32 md:py-44 px-6 md:px-10">
         <div className="mx-auto max-w-3xl text-center">
           <FadeIn><p className="eyebrow">Studio</p></FadeIn>
@@ -125,6 +125,15 @@ function Home() {
               {introData.body ??
                 "Every frame is made with patience, care, and an eye for the light that makes a moment feel like itself."}
             </p>
+          </FadeIn>
+          <FadeIn delay={0.4}>
+            <Link
+              to="/portfolio"
+              className="group mt-12 inline-flex items-center gap-4 bg-ink text-white px-12 py-6 md:px-16 md:py-7 text-sm md:text-base uppercase tracking-[0.32em] shadow-xl hover:bg-ink/85 hover:shadow-2xl hover:-translate-y-0.5 transition-all duration-500"
+            >
+              <span>Explore the Portfolio</span>
+              <span aria-hidden className="inline-block transition-transform duration-500 group-hover:translate-x-2">→</span>
+            </Link>
           </FadeIn>
         </div>
       </section>
