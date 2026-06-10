@@ -68,7 +68,7 @@ function Home() {
             transition={{ duration: 1.2, delay: 0.3 }}
             className="eyebrow text-white/80"
           >
-            Photography Studio
+            FREELANCE PHOTOGRAPHER
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
