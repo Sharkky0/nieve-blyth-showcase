@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 import { featuredPhotosQuery, siteContentQuery } from "@/lib/queries";
 import { FadeIn } from "@/components/site/FadeIn";
 
@@ -39,7 +39,18 @@ function Home() {
   const y = useTransform(scrollYProgress, [0, 1], [0, 120]);
   const opacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
-  const heroImage = featured?.[0]?.public_url;
+  const slides = featured ?? [];
+  const [slideIndex, setSlideIndex] = useState(0);
+
+  useEffect(() => {
+    if (slides.length < 2) return;
+    const id = window.setInterval(() => {
+      setSlideIndex((i) => (i + 1) % slides.length);
+    }, 6000);
+    return () => window.clearInterval(id);
+  }, [slides.length]);
+
+  const heroImage = slides[slideIndex]?.public_url;
 
   return (
     <>
@@ -47,15 +58,22 @@ function Home() {
       <section ref={heroRef} className="relative h-dvh w-full overflow-hidden bg-ink">
         <motion.div style={{ y }} className="absolute inset-0">
           {heroImage ? (
-            <img
-              src={heroImage}
-              alt={featured?.[0]?.alt_text || "Featured photograph"}
-              className="h-full w-full object-cover"
-            />
+            <AnimatePresence mode="sync">
+              <motion.img
+                key={slides[slideIndex]?.id ?? slideIndex}
+                src={heroImage}
+                alt={slides[slideIndex]?.alt_text || "Featured photograph"}
+                initial={{ opacity: 0, scale: 1.04 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ opacity: { duration: 1.6, ease: "easeInOut" }, scale: { duration: 7, ease: "linear" } }}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </AnimatePresence>
           ) : (
             <div className="h-full w-full bg-gradient-to-b from-stone-200 to-stone-400" />
           )}
-          <div className="absolute inset-0 bg-black/25" />
+          <div className="absolute inset-0 bg-black/30" />
         </motion.div>
 
         <motion.div

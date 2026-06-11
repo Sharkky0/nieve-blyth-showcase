@@ -2,7 +2,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { LogOut, Upload, Trash2, Star, StarOff, Save, Plus } from "lucide-react";
+import { LogOut, Upload, Trash2, Star, StarOff, Save, Plus, ArrowUp, ArrowDown } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   photosQuery,
@@ -276,13 +276,21 @@ function CategoriesPanel() {
         <button onClick={add} className="bg-ink text-white px-6 text-xs uppercase tracking-[0.22em]">Add</button>
       </div>
       <ul className="border-t border-border">
-        {categories.map((c) => (
+        {categories.map((c, i) => (
           <li key={c.id} className="flex items-center justify-between py-3 border-b border-border">
             <div>
               <p className="text-sm text-ink">{c.name}</p>
               <p className="text-xs text-muted-foreground">/{c.slug}</p>
             </div>
-            <button onClick={() => del(c)} className="text-destructive"><Trash2 size={14} /></button>
+            <div className="flex items-center gap-1">
+              <ReorderButtons
+                table="categories"
+                items={categories}
+                index={i}
+                queryKey={["categories"]}
+              />
+              <button onClick={() => del(c)} className="text-destructive ml-2"><Trash2 size={14} /></button>
+            </div>
           </li>
         ))}
       </ul>
@@ -479,7 +487,7 @@ function ReviewsPanel() {
       </div>
 
       <ul className="mt-8 space-y-3">
-        {reviews.map((r) => (
+        {reviews.map((r, i) => (
           <li key={r.id} className="border border-border p-5">
             <div className="flex justify-between gap-3 flex-wrap">
               <div className="flex-1 min-w-0">
@@ -491,7 +499,10 @@ function ReviewsPanel() {
                 </div>
                 <p className="mt-2 text-sm whitespace-pre-wrap text-ink/85">"{r.body}"</p>
               </div>
-              <button onClick={() => del(r)} className="text-destructive self-start"><Trash2 size={14} /></button>
+              <div className="flex items-start gap-1">
+                <ReorderButtons table="reviews" items={reviews} index={i} queryKey={["reviews"]} />
+                <button onClick={() => del(r)} className="text-destructive ml-2"><Trash2 size={14} /></button>
+              </div>
             </div>
           </li>
         ))}
@@ -539,8 +550,13 @@ function PackagesPanel() {
       </button>
 
       <div className="mt-6 space-y-5">
-        {packages.map((p) => (
-          <PackageRow key={p.id} pkg={p} onUpdate={(patch) => update(p.id, patch)} onDelete={() => del(p)} />
+        {packages.map((p, i) => (
+          <div key={p.id}>
+            <div className="flex items-center justify-end gap-1 mb-1">
+              <ReorderButtons table="packages" items={packages} index={i} queryKey={["packages"]} />
+            </div>
+            <PackageRow pkg={p} onUpdate={(patch) => update(p.id, patch)} onDelete={() => del(p)} />
+          </div>
         ))}
         {packages.length === 0 && <p className="text-sm text-muted-foreground">No packages yet — add one to display on the booking page.</p>}
       </div>
@@ -621,5 +637,64 @@ function PackageRow({
         </button>
       </div>
     </div>
+  );
+}
+
+/* -------- Reorder helper -------- */
+function ReorderButtons<T extends { id: string; sort_order: number }>({
+  table,
+  items,
+  index,
+  queryKey,
+}: {
+  table: "categories" | "reviews" | "packages";
+  items: T[];
+  index: number;
+  queryKey: readonly unknown[];
+}) {
+  const qc = useQueryClient();
+
+  const swap = async (dir: -1 | 1) => {
+    const j = index + dir;
+    if (j < 0 || j >= items.length) return;
+    const a = items[index];
+    const b = items[j];
+    const aOrder = a.sort_order;
+    const bOrder = b.sort_order;
+    // If equal, nudge so swap is visible
+    const newA = bOrder === aOrder ? aOrder + dir : bOrder;
+    const newB = bOrder === aOrder ? aOrder : aOrder;
+    const [r1, r2] = await Promise.all([
+      supabase.from(table as any).update({ sort_order: newA }).eq("id", a.id),
+      supabase.from(table as any).update({ sort_order: newB }).eq("id", b.id),
+    ]);
+    if (r1.error || r2.error) {
+      toast.error(r1.error?.message ?? r2.error?.message ?? "Reorder failed");
+      return;
+    }
+    qc.invalidateQueries({ queryKey });
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => swap(-1)}
+        disabled={index === 0}
+        className="p-1 text-muted-foreground hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed"
+        title="Move up"
+        aria-label="Move up"
+      >
+        <ArrowUp size={14} />
+      </button>
+      <button
+        onClick={() => swap(1)}
+        disabled={index === items.length - 1}
+        className="p-1 text-muted-foreground hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed"
+        title="Move down"
+        aria-label="Move down"
+      >
+        <ArrowDown size={14} />
+      </button>
+    </>
   );
 }
