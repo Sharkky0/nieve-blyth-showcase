@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { sendEnquiryEmail } from "@/lib/email.functions";
 import { FadeIn } from "@/components/site/FadeIn";
+import { PackagesList } from "@/components/site/PackagesList";
 
 export const Route = createFileRoute("/booking")({
   head: () => ({
