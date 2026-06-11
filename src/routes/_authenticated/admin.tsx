@@ -550,8 +550,13 @@ function PackagesPanel() {
       </button>
 
       <div className="mt-6 space-y-5">
-        {packages.map((p) => (
-          <PackageRow key={p.id} pkg={p} onUpdate={(patch) => update(p.id, patch)} onDelete={() => del(p)} />
+        {packages.map((p, i) => (
+          <div key={p.id}>
+            <div className="flex items-center justify-end gap-1 mb-1">
+              <ReorderButtons table="packages" items={packages} index={i} queryKey={["packages"]} />
+            </div>
+            <PackageRow pkg={p} onUpdate={(patch) => update(p.id, patch)} onDelete={() => del(p)} />
+          </div>
         ))}
         {packages.length === 0 && <p className="text-sm text-muted-foreground">No packages yet — add one to display on the booking page.</p>}
       </div>
