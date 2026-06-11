@@ -424,3 +424,202 @@ function MessagesPanel() {
     </ul>
   );
 }
+
+/* -------- Reviews -------- */
+function ReviewsPanel() {
+  const qc = useQueryClient();
+  const { data: reviews = [] } = useQuery(reviewsQuery());
+  const [author, setAuthor] = useState("");
+  const [body, setBody] = useState("");
+  const [rating, setRating] = useState(5);
+
+  const add = async () => {
+    if (!author.trim() || !body.trim()) return toast.error("Author and review required");
+    const { error } = await supabase.from("reviews" as any).insert({
+      author: author.trim(),
+      body: body.trim(),
+      rating,
+      sort_order: (reviews.at(-1)?.sort_order ?? 0) + 10,
+    });
+    if (error) return toast.error(error.message);
+    setAuthor(""); setBody(""); setRating(5);
+    qc.invalidateQueries({ queryKey: ["reviews"] });
+    toast.success("Review added");
+  };
+
+  const del = async (r: Review) => {
+    if (!confirm(`Delete review from ${r.author}?`)) return;
+    const { error } = await supabase.from("reviews" as any).delete().eq("id", r.id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["reviews"] });
+    toast.success("Deleted");
+  };
+
+  const update = async (id: string, patch: Partial<Review>) => {
+    const { error } = await supabase.from("reviews" as any).update(patch).eq("id", id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["reviews"] });
+  };
+
+  return (
+    <div className="mt-8 max-w-3xl">
+      <div className="border border-border p-6 space-y-4">
+        <p className="eyebrow">Add a Facebook review</p>
+        <input value={author} onChange={(e) => setAuthor(e.target.value)} placeholder="Reviewer name" className="w-full border-b border-border py-2 outline-none focus:border-ink text-sm" />
+        <textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Review text" rows={4} className="w-full border border-border p-2 outline-none focus:border-ink text-sm resize-none" />
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-muted-foreground">Rating:</span>
+          <select value={rating} onChange={(e) => setRating(parseInt(e.target.value, 10))} className="border border-border px-2 py-1 text-sm">
+            {[5,4,3,2,1].map((n) => <option key={n} value={n}>{n} ★</option>)}
+          </select>
+          <button onClick={add} className="ml-auto inline-flex items-center gap-2 bg-ink text-white px-5 py-2 text-xs uppercase tracking-[0.22em]">
+            <Plus size={12} /> Add
+          </button>
+        </div>
+      </div>
+
+      <ul className="mt-8 space-y-3">
+        {reviews.map((r) => (
+          <li key={r.id} className="border border-border p-5">
+            <div className="flex justify-between gap-3 flex-wrap">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3">
+                  <p className="font-medium text-ink">{r.author}</p>
+                  <select defaultValue={r.rating} onChange={(e) => update(r.id, { rating: parseInt(e.target.value, 10) })} className="text-xs border border-border px-1 py-0.5">
+                    {[5,4,3,2,1].map((n) => <option key={n} value={n}>{n} ★</option>)}
+                  </select>
+                </div>
+                <p className="mt-2 text-sm whitespace-pre-wrap text-ink/85">"{r.body}"</p>
+              </div>
+              <button onClick={() => del(r)} className="text-destructive self-start"><Trash2 size={14} /></button>
+            </div>
+          </li>
+        ))}
+        {reviews.length === 0 && <li className="text-sm text-muted-foreground">No reviews yet.</li>}
+      </ul>
+    </div>
+  );
+}
+
+/* -------- Packages -------- */
+function PackagesPanel() {
+  const qc = useQueryClient();
+  const { data: packages = [] } = useQuery(packagesQuery(false));
+
+  const add = async () => {
+    const { error } = await supabase.from("packages" as any).insert({
+      title: "New package",
+      description: "",
+      price: "",
+      features: [],
+      sort_order: (packages.at(-1)?.sort_order ?? 0) + 10,
+    });
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["packages"] });
+  };
+
+  const update = async (id: string, patch: Partial<Package>) => {
+    const { error } = await supabase.from("packages" as any).update(patch).eq("id", id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["packages"] });
+  };
+
+  const del = async (p: Package) => {
+    if (!confirm(`Delete "${p.title}"?`)) return;
+    const { error } = await supabase.from("packages" as any).delete().eq("id", p.id);
+    if (error) return toast.error(error.message);
+    qc.invalidateQueries({ queryKey: ["packages"] });
+    toast.success("Deleted");
+  };
+
+  return (
+    <div className="mt-8 max-w-3xl">
+      <button onClick={add} className="inline-flex items-center gap-2 bg-ink text-white px-5 py-2 text-xs uppercase tracking-[0.22em]">
+        <Plus size={12} /> New package
+      </button>
+
+      <div className="mt-6 space-y-5">
+        {packages.map((p) => (
+          <PackageRow key={p.id} pkg={p} onUpdate={(patch) => update(p.id, patch)} onDelete={() => del(p)} />
+        ))}
+        {packages.length === 0 && <p className="text-sm text-muted-foreground">No packages yet — add one to display on the booking page.</p>}
+      </div>
+    </div>
+  );
+}
+
+function PackageRow({
+  pkg,
+  onUpdate,
+  onDelete,
+}: {
+  pkg: Package;
+  onUpdate: (patch: Partial<Package>) => void;
+  onDelete: () => void;
+}) {
+  const [title, setTitle] = useState(pkg.title);
+  const [description, setDescription] = useState(pkg.description);
+  const [price, setPrice] = useState(pkg.price);
+  const [badge, setBadge] = useState(pkg.badge ?? "");
+  const [features, setFeatures] = useState((pkg.features ?? []).join("\n"));
+  const [sortOrder, setSortOrder] = useState(pkg.sort_order);
+  const [active, setActive] = useState(pkg.active);
+
+  const save = () => {
+    onUpdate({
+      title,
+      description,
+      price,
+      badge: badge.trim() || null,
+      features: features.split("\n").map((f) => f.trim()).filter(Boolean),
+      sort_order: sortOrder,
+      active,
+    });
+    toast.success("Saved");
+  };
+
+  return (
+    <div className="border border-border p-5 space-y-3">
+      <div className="grid md:grid-cols-2 gap-3">
+        <label className="block">
+          <span className="text-xs text-muted-foreground">Title</span>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} className="mt-1 w-full border-b border-border py-1 outline-none focus:border-ink text-sm" />
+        </label>
+        <label className="block">
+          <span className="text-xs text-muted-foreground">Price (e.g. £250)</span>
+          <input value={price} onChange={(e) => setPrice(e.target.value)} className="mt-1 w-full border-b border-border py-1 outline-none focus:border-ink text-sm" />
+        </label>
+      </div>
+      <label className="block">
+        <span className="text-xs text-muted-foreground">Description</span>
+        <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={2} className="mt-1 w-full border border-border p-2 outline-none focus:border-ink text-sm resize-none" />
+      </label>
+      <label className="block">
+        <span className="text-xs text-muted-foreground">Features (one per line)</span>
+        <textarea value={features} onChange={(e) => setFeatures(e.target.value)} rows={4} className="mt-1 w-full border border-border p-2 outline-none focus:border-ink text-sm resize-none" />
+      </label>
+      <div className="grid md:grid-cols-3 gap-3">
+        <label className="block">
+          <span className="text-xs text-muted-foreground">Badge (optional, e.g. Popular)</span>
+          <input value={badge} onChange={(e) => setBadge(e.target.value)} className="mt-1 w-full border-b border-border py-1 outline-none focus:border-ink text-sm" />
+        </label>
+        <label className="block">
+          <span className="text-xs text-muted-foreground">Sort order</span>
+          <input type="number" value={sortOrder} onChange={(e) => setSortOrder(parseInt(e.target.value, 10) || 0)} className="mt-1 w-full border-b border-border py-1 outline-none focus:border-ink text-sm" />
+        </label>
+        <label className="flex items-center gap-2 pt-5">
+          <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} />
+          <span className="text-xs text-muted-foreground">Visible on site</span>
+        </label>
+      </div>
+      <div className="flex gap-3 pt-2">
+        <button onClick={save} className="inline-flex items-center gap-2 bg-ink text-white px-4 py-2 text-xs uppercase tracking-[0.22em]">
+          <Save size={12} /> Save
+        </button>
+        <button onClick={onDelete} className="ml-auto text-destructive inline-flex items-center gap-2 text-xs uppercase tracking-[0.22em]">
+          <Trash2 size={12} /> Delete
+        </button>
+      </div>
+    </div>
+  );
+}
