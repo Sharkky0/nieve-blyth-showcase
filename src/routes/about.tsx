@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { siteContentQuery } from "@/lib/queries";
 import { FadeIn } from "@/components/site/FadeIn";
+import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
