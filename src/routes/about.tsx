@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { siteContentQuery } from "@/lib/queries";
 import { FadeIn } from "@/components/site/FadeIn";
+import { ReviewsCarousel } from "@/components/site/ReviewsCarousel";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -26,6 +27,7 @@ function AboutPage() {
   const about = (data?.value as any) ?? {};
 
   return (
+    <>
     <section className="pt-32 md:pt-44 pb-32 px-6 md:px-10">
       <div className="mx-auto max-w-[1200px] grid md:grid-cols-2 gap-16 md:gap-24 items-center">
         <FadeIn className="order-2 md:order-1">
@@ -65,5 +67,7 @@ function AboutPage() {
         </FadeIn>
       </div>
     </section>
+    <ReviewsCarousel />
+    </>
   );
 }

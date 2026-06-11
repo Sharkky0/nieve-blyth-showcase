@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { sendEnquiryEmail } from "@/lib/email.functions";
 import { FadeIn } from "@/components/site/FadeIn";
+import { PackagesList } from "@/components/site/PackagesList";
 
 export const Route = createFileRoute("/booking")({
   head: () => ({
@@ -89,6 +90,8 @@ function BookingPage() {
             your session, dates, and how to make it everything you'd hoped for.
           </p>
         </FadeIn>
+
+        <PackagesList />
 
         {sent ? (
           <FadeIn className="mt-16 border border-border p-10 text-center">

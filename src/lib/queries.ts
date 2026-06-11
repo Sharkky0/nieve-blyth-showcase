@@ -27,6 +27,56 @@ export type SiteContent = {
   value: Record<string, unknown>;
 };
 
+export type Review = {
+  id: string;
+  author: string;
+  rating: number;
+  body: string;
+  source: string;
+  sort_order: number;
+  created_at: string;
+};
+
+export type Package = {
+  id: string;
+  title: string;
+  description: string;
+  price: string;
+  features: string[];
+  badge: string | null;
+  sort_order: number;
+  active: boolean;
+  created_at: string;
+};
+
+export const reviewsQuery = () =>
+  queryOptions({
+    queryKey: ["reviews"],
+    queryFn: async (): Promise<Review[]> => {
+      const { data, error } = await supabase
+        .from("reviews" as any)
+        .select("*")
+        .order("sort_order", { ascending: true })
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as unknown as Review[];
+    },
+    staleTime: 30_000,
+  });
+
+export const packagesQuery = (onlyActive = false) =>
+  queryOptions({
+    queryKey: ["packages", onlyActive],
+    queryFn: async (): Promise<Package[]> => {
+      let q = supabase.from("packages" as any).select("*").order("sort_order", { ascending: true });
+      if (onlyActive) q = q.eq("active", true);
+      const { data, error } = await q;
+      if (error) throw error;
+      return (data ?? []) as unknown as Package[];
+    },
+    staleTime: 30_000,
+  });
+
 export const photosQuery = () =>
   queryOptions({
     queryKey: ["photos"],
