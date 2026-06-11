@@ -3,11 +3,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { sendEnquiryEmail } from "@/lib/email.functions";
 import { FadeIn } from "@/components/site/FadeIn";
 import { PackagesList } from "@/components/site/PackagesList";
+import { packagesQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/booking")({
   head: () => ({
