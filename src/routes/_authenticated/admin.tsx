@@ -487,7 +487,7 @@ function ReviewsPanel() {
       </div>
 
       <ul className="mt-8 space-y-3">
-        {reviews.map((r) => (
+        {reviews.map((r, i) => (
           <li key={r.id} className="border border-border p-5">
             <div className="flex justify-between gap-3 flex-wrap">
               <div className="flex-1 min-w-0">
@@ -499,7 +499,10 @@ function ReviewsPanel() {
                 </div>
                 <p className="mt-2 text-sm whitespace-pre-wrap text-ink/85">"{r.body}"</p>
               </div>
-              <button onClick={() => del(r)} className="text-destructive self-start"><Trash2 size={14} /></button>
+              <div className="flex items-start gap-1">
+                <ReorderButtons table="reviews" items={reviews} index={i} queryKey={["reviews"]} />
+                <button onClick={() => del(r)} className="text-destructive ml-2"><Trash2 size={14} /></button>
+              </div>
             </div>
           </li>
         ))}
