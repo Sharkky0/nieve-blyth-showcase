@@ -101,6 +101,45 @@ export type Database = {
         }
         Relationships: []
       }
+      packages: {
+        Row: {
+          active: boolean
+          badge: string | null
+          created_at: string
+          description: string
+          features: string[]
+          id: string
+          price: string
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          badge?: string | null
+          created_at?: string
+          description?: string
+          features?: string[]
+          id?: string
+          price?: string
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          badge?: string | null
+          created_at?: string
+          description?: string
+          features?: string[]
+          id?: string
+          price?: string
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       photos: {
         Row: {
           alt_text: string
@@ -153,6 +192,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      reviews: {
+        Row: {
+          author: string
+          body: string
+          created_at: string
+          id: string
+          rating: number
+          sort_order: number
+          source: string
+          updated_at: string
+        }
+        Insert: {
+          author: string
+          body: string
+          created_at?: string
+          id?: string
+          rating?: number
+          sort_order?: number
+          source?: string
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          body?: string
+          created_at?: string
+          id?: string
+          rating?: number
+          sort_order?: number
+          source?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       site_content: {
         Row: {
