@@ -91,12 +91,16 @@ function AdminPage() {
           <TabsList>
             <TabsTrigger value="photos">Photos</TabsTrigger>
             <TabsTrigger value="categories">Categories</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews</TabsTrigger>
+            <TabsTrigger value="packages">Packages</TabsTrigger>
             <TabsTrigger value="content">Content</TabsTrigger>
             <TabsTrigger value="enquiries">Enquiries</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
           </TabsList>
           <TabsContent value="photos"><PhotosPanel /></TabsContent>
           <TabsContent value="categories"><CategoriesPanel /></TabsContent>
+          <TabsContent value="reviews"><ReviewsPanel /></TabsContent>
+          <TabsContent value="packages"><PackagesPanel /></TabsContent>
           <TabsContent value="content"><ContentPanel /></TabsContent>
           <TabsContent value="enquiries"><EnquiriesPanel /></TabsContent>
           <TabsContent value="messages"><MessagesPanel /></TabsContent>
