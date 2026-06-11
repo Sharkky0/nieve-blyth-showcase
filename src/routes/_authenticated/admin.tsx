@@ -276,13 +276,21 @@ function CategoriesPanel() {
         <button onClick={add} className="bg-ink text-white px-6 text-xs uppercase tracking-[0.22em]">Add</button>
       </div>
       <ul className="border-t border-border">
-        {categories.map((c) => (
+        {categories.map((c, i) => (
           <li key={c.id} className="flex items-center justify-between py-3 border-b border-border">
             <div>
               <p className="text-sm text-ink">{c.name}</p>
               <p className="text-xs text-muted-foreground">/{c.slug}</p>
             </div>
-            <button onClick={() => del(c)} className="text-destructive"><Trash2 size={14} /></button>
+            <div className="flex items-center gap-1">
+              <ReorderButtons
+                table="categories"
+                items={categories}
+                index={i}
+                queryKey={["categories"]}
+              />
+              <button onClick={() => del(c)} className="text-destructive ml-2"><Trash2 size={14} /></button>
+            </div>
           </li>
         ))}
       </ul>
