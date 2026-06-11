@@ -91,6 +91,8 @@ function BookingPage() {
           </p>
         </FadeIn>
 
+        <PackagesList />
+
         {sent ? (
           <FadeIn className="mt-16 border border-border p-10 text-center">
             <p className="eyebrow">Thank you</p>
