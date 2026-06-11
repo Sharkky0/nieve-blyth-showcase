@@ -67,5 +67,7 @@ function AboutPage() {
         </FadeIn>
       </div>
     </section>
+    <ReviewsCarousel />
+    </>
   );
 }
