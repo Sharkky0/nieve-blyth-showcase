@@ -41,6 +41,7 @@ type Form = z.infer<typeof schema>;
 
 function BookingPage() {
   const [sent, setSent] = useState(false);
+  const { data: packages = [] } = useQuery(packagesQuery(true));
   const {
     register,
     handleSubmit,
