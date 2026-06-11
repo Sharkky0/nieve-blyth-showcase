@@ -639,3 +639,62 @@ function PackageRow({
     </div>
   );
 }
+
+/* -------- Reorder helper -------- */
+function ReorderButtons<T extends { id: string; sort_order: number }>({
+  table,
+  items,
+  index,
+  queryKey,
+}: {
+  table: "categories" | "reviews" | "packages";
+  items: T[];
+  index: number;
+  queryKey: readonly unknown[];
+}) {
+  const qc = useQueryClient();
+
+  const swap = async (dir: -1 | 1) => {
+    const j = index + dir;
+    if (j < 0 || j >= items.length) return;
+    const a = items[index];
+    const b = items[j];
+    const aOrder = a.sort_order;
+    const bOrder = b.sort_order;
+    // If equal, nudge so swap is visible
+    const newA = bOrder === aOrder ? aOrder + dir : bOrder;
+    const newB = bOrder === aOrder ? aOrder : aOrder;
+    const [r1, r2] = await Promise.all([
+      supabase.from(table as any).update({ sort_order: newA }).eq("id", a.id),
+      supabase.from(table as any).update({ sort_order: newB }).eq("id", b.id),
+    ]);
+    if (r1.error || r2.error) {
+      toast.error(r1.error?.message ?? r2.error?.message ?? "Reorder failed");
+      return;
+    }
+    qc.invalidateQueries({ queryKey });
+  };
+
+  return (
+    <>
+      <button
+        onClick={() => swap(-1)}
+        disabled={index === 0}
+        className="p-1 text-muted-foreground hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed"
+        title="Move up"
+        aria-label="Move up"
+      >
+        <ArrowUp size={14} />
+      </button>
+      <button
+        onClick={() => swap(1)}
+        disabled={index === items.length - 1}
+        className="p-1 text-muted-foreground hover:text-ink disabled:opacity-30 disabled:cursor-not-allowed"
+        title="Move down"
+        aria-label="Move down"
+      >
+        <ArrowDown size={14} />
+      </button>
+    </>
+  );
+}
