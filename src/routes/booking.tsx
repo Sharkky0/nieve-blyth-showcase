@@ -139,12 +139,16 @@ function BookingPage() {
                 </Field>
               </div>
               <div className="grid md:grid-cols-2 gap-8">
-                <Field label="Event type" error={errors.event_type?.message}>
-                  <input
-                    {...register("event_type")}
-                    placeholder="Wedding, portrait, family…"
-                    className="lf-input"
-                  />
+                <Field label="Session / package" error={errors.event_type?.message}>
+                  <select {...register("event_type")} className="lf-input bg-transparent">
+                    <option value="">— Select a package —</option>
+                    {packages.map((p) => (
+                      <option key={p.id} value={p.title}>
+                        {p.title}{p.price ? ` — ${p.price}` : ""}
+                      </option>
+                    ))}
+                    <option value="Other">Other / not sure yet</option>
+                  </select>
                 </Field>
                 <Field label="Preferred date" error={errors.preferred_date?.message}>
                   <input
