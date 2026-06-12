@@ -28,7 +28,7 @@ export function PackagesList() {
         opts={{ align: "start", loop: packages.length > 1 }}
         className="mt-10 w-full"
       >
-        <CarouselContent className="-ml-4">
+        <CarouselContent className="-ml-4 pt-4">
           {packages.map((p) => (
             <CarouselItem
               key={p.id}
