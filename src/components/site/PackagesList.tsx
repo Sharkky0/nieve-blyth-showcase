@@ -17,7 +17,7 @@ export function PackagesList() {
         </p>
       </div>
 
-      <div className="mt-10 max-h-[520px] overflow-y-auto pr-2 space-y-5 lf-scroll">
+      <div className="mt-10 max-h-[520px] overflow-y-auto pr-2 pt-3 space-y-5 lf-scroll">
         {packages.map((p) => (
           <article
             key={p.id}

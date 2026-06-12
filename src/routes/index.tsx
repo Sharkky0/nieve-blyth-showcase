@@ -156,38 +156,6 @@ function Home() {
         </div>
       </section>
 
-      {/* Featured grid */}
-      {featured && featured.length > 1 && (
-        <section className="px-2 md:px-6 pb-32">
-          <div className="mx-auto max-w-[1400px]">
-            <FadeIn className="text-center mb-16">
-              <p className="eyebrow">Selected Work</p>
-              <h2 className="mt-4 text-3xl md:text-4xl text-ink">From the portfolio</h2>
-            </FadeIn>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-4">
-              {featured.slice(1, 7).map((p, i) => (
-                <FadeIn key={p.id} delay={i * 0.08} className="hover-zoom aspect-[4/5] bg-stone">
-                  <img
-                    src={p.public_url}
-                    alt={p.alt_text}
-                    loading="lazy"
-                    decoding="async"
-                    className="h-full w-full object-cover"
-                  />
-                </FadeIn>
-              ))}
-            </div>
-            <FadeIn className="text-center mt-16">
-              <Link
-                to="/portfolio"
-                className="inline-block border-b border-ink pb-1 text-xs uppercase tracking-[0.28em] hover:opacity-60 transition-opacity"
-              >
-                View full portfolio
-              </Link>
-            </FadeIn>
-          </div>
-        </section>
-      )}
 
       {/* CTA */}
       <section className="bg-cream/60 py-32 px-6">
