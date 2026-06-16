@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { Check } from "lucide-react";
 import { packagesQuery } from "@/lib/queries";
 import { FadeIn } from "@/components/site/FadeIn";
 import {
