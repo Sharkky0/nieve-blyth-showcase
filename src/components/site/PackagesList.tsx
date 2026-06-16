@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { Check } from "lucide-react";
 import { packagesQuery } from "@/lib/queries";
 import { FadeIn } from "@/components/site/FadeIn";
 import {
@@ -54,14 +53,9 @@ export function PackagesList() {
                   )}
                 </div>
                 {p.features.length > 0 && (
-                  <ul className="mt-5 space-y-2">
-                    {p.features.map((f, i) => (
-                      <li key={i} className="flex gap-3 text-sm text-ink/85">
-                        <Check size={16} strokeWidth={1.5} className="mt-0.5 flex-shrink-0" />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
+                  <p className="mt-5 text-xs text-muted-foreground italic leading-relaxed">
+                    {p.features.join(" · ")}
+                  </p>
                 )}
               </article>
             </CarouselItem>
