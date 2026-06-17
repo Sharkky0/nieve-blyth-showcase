@@ -700,3 +700,105 @@ function ReorderButtons<T extends { id: string; sort_order: number }>({
     </>
   );
 }
+
+/* -------- Security events -------- */
+function SecurityPanel() {
+  const qc = useQueryClient();
+  const [filter, setFilter] = useState<string>("");
+  const { data: events = [], isLoading } = useQuery({
+    queryKey: ["security_events", filter],
+    queryFn: async () => {
+      let q = supabase
+        .from("security_events" as any)
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(200);
+      if (filter) q = q.eq("event_type", filter);
+      const { data, error } = await q;
+      if (error) throw error;
+      return data as any[];
+    },
+  });
+
+  const clearOlderThan = async (days: number) => {
+    if (!confirm(`Delete security events older than ${days} day${days === 1 ? "" : "s"}?`)) return;
+    const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
+    const { error } = await supabase
+      .from("security_events" as any)
+      .delete()
+      .lt("created_at", cutoff);
+    if (error) return toast.error(error.message);
+    toast.success("Cleared");
+    qc.invalidateQueries({ queryKey: ["security_events"] });
+  };
+
+  const eventTypes = Array.from(new Set(events.map((e) => e.event_type)));
+
+  const sevColor = (s: string) =>
+    s === "error" ? "text-destructive" : s === "warning" ? "text-amber-600" : "text-muted-foreground";
+
+  return (
+    <div className="mt-8">
+      <div className="flex flex-wrap gap-3 items-center justify-between mb-5">
+        <div className="flex gap-2 items-center">
+          <select
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="text-xs border border-border py-1.5 px-2 bg-white"
+          >
+            <option value="">All event types</option>
+            {eventTypes.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+          <button
+            onClick={() => qc.invalidateQueries({ queryKey: ["security_events"] })}
+            className="text-xs uppercase tracking-[0.22em] border border-border px-3 py-1.5 hover:bg-cream/40"
+          >
+            Refresh
+          </button>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => clearOlderThan(30)}
+            className="text-xs uppercase tracking-[0.22em] border border-border px-3 py-1.5 hover:bg-cream/40"
+          >
+            Clear &gt; 30 days
+          </button>
+          <button
+            onClick={() => clearOlderThan(0)}
+            className="text-xs uppercase tracking-[0.22em] border border-destructive text-destructive px-3 py-1.5 hover:bg-destructive/5"
+          >
+            Clear all
+          </button>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : !events.length ? (
+        <p className="text-sm text-muted-foreground">No security events recorded yet.</p>
+      ) : (
+        <ul className="border-t border-border">
+          {events.map((e) => (
+            <li key={e.id} className="py-3 border-b border-border grid grid-cols-12 gap-3 text-xs">
+              <span className="col-span-3 text-muted-foreground">
+                {new Date(e.created_at).toLocaleString()}
+              </span>
+              <span className={`col-span-1 uppercase tracking-wider ${sevColor(e.severity)}`}>
+                {e.severity}
+              </span>
+              <span className="col-span-3 text-ink">{e.event_type}</span>
+              <span className="col-span-2 text-muted-foreground truncate" title={e.path ?? ""}>
+                {e.path ?? "—"}
+              </span>
+              <span className="col-span-3 text-muted-foreground truncate" title={JSON.stringify(e.detail)}>
+                ip {e.ip_hash?.slice(0, 8) ?? "—"} · {e.detail ? JSON.stringify(e.detail).slice(0, 80) : ""}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
