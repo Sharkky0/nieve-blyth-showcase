@@ -12,6 +12,6 @@ export default defineConfig({
   },
 
   vite: {
-    base: "/YOUR-REPO-NAME/",
+    base: "/nieve-blyth-photography/",
   },
 });
