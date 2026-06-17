@@ -96,6 +96,7 @@ function AdminPage() {
             <TabsTrigger value="content">Content</TabsTrigger>
             <TabsTrigger value="enquiries">Enquiries</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="security">Security</TabsTrigger>
           </TabsList>
           <TabsContent value="photos"><PhotosPanel /></TabsContent>
           <TabsContent value="categories"><CategoriesPanel /></TabsContent>
@@ -104,6 +105,7 @@ function AdminPage() {
           <TabsContent value="content"><ContentPanel /></TabsContent>
           <TabsContent value="enquiries"><EnquiriesPanel /></TabsContent>
           <TabsContent value="messages"><MessagesPanel /></TabsContent>
+          <TabsContent value="security"><SecurityPanel /></TabsContent>
         </Tabs>
       </div>
     </section>
