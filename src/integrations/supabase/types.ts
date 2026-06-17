@@ -101,6 +101,27 @@ export type Database = {
         }
         Relationships: []
       }
+      form_rate_limits: {
+        Row: {
+          created_at: string
+          form_key: string
+          id: string
+          ip_hash: string
+        }
+        Insert: {
+          created_at?: string
+          form_key: string
+          id?: string
+          ip_hash: string
+        }
+        Update: {
+          created_at?: string
+          form_key?: string
+          id?: string
+          ip_hash?: string
+        }
+        Relationships: []
+      }
       packages: {
         Row: {
           active: boolean
@@ -223,6 +244,39 @@ export type Database = {
           sort_order?: number
           source?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      security_events: {
+        Row: {
+          created_at: string
+          detail: Json
+          event_type: string
+          id: string
+          ip_hash: string | null
+          path: string | null
+          severity: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          detail?: Json
+          event_type: string
+          id?: string
+          ip_hash?: string | null
+          path?: string | null
+          severity?: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          detail?: Json
+          event_type?: string
+          id?: string
+          ip_hash?: string | null
+          path?: string | null
+          severity?: string
+          user_agent?: string | null
         }
         Relationships: []
       }

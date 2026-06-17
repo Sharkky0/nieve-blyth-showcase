@@ -6,7 +6,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Facebook, Instagram, Mail } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { siteContentQuery } from "@/lib/queries";
 import { sendEnquiryEmail } from "@/lib/email.functions";
 import { FadeIn } from "@/components/site/FadeIn";
@@ -32,6 +31,7 @@ const schema = z.object({
   name: z.string().trim().min(1).max(100),
   email: z.string().trim().email().max(255),
   message: z.string().trim().min(1).max(2000),
+  website: z.string().max(0).optional().or(z.literal("")), // honeypot
 });
 type Form = z.infer<typeof schema>;
 
@@ -43,9 +43,19 @@ function ContactPage() {
     useForm<Form>({ resolver: zodResolver(schema) });
 
   const onSubmit = async (values: Form) => {
-    const { error } = await supabase.from("contact_messages").insert(values);
-    if (error) {
-      toast.error("Couldn't send your message. Please try again.");
+    const res = await fetch("/api/public/forms/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: values.name,
+        email: values.email,
+        message: values.message,
+        website: values.website || "",
+      }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      toast.error(data?.error ?? "Couldn't send your message. Please try again.");
       return;
     }
     try {
@@ -118,6 +128,12 @@ function ContactPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-7" noValidate>
+              <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+                <label>
+                  Website
+                  <input type="text" tabIndex={-1} autoComplete="off" {...register("website")} />
+                </label>
+              </div>
               <label className="block">
                 <span className="eyebrow">Name</span>
                 <input {...register("name")} className="lf-input mt-1" />
