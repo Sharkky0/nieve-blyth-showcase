@@ -37,7 +37,7 @@ export async function logSecurityEvent(args: LogArgs): Promise<void> {
       ip_hash: args.ip_hash ?? null,
       user_agent: args.user_agent ?? null,
       path: args.path ?? null,
-      detail: args.detail ?? {},
+      detail: (args.detail ?? {}) as any,
     });
   } catch (e) {
     console.warn("[security] log failed", e);

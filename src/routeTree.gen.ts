@@ -17,6 +17,8 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as ApiPublicFormsContactRouteImport } from './routes/api/public/forms/contact'
+import { Route as ApiPublicFormsBookingRouteImport } from './routes/api/public/forms/booking'
 
 const PortfolioRoute = PortfolioRouteImport.update({
   id: '/portfolio',
@@ -57,6 +59,16 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const ApiPublicFormsContactRoute = ApiPublicFormsContactRouteImport.update({
+  id: '/api/public/forms/contact',
+  path: '/api/public/forms/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicFormsBookingRoute = ApiPublicFormsBookingRouteImport.update({
+  id: '/api/public/forms/booking',
+  path: '/api/public/forms/booking',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -66,6 +78,8 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/portfolio': typeof PortfolioRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/api/public/forms/booking': typeof ApiPublicFormsBookingRoute
+  '/api/public/forms/contact': typeof ApiPublicFormsContactRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,6 +89,8 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/portfolio': typeof PortfolioRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/api/public/forms/booking': typeof ApiPublicFormsBookingRoute
+  '/api/public/forms/contact': typeof ApiPublicFormsContactRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,6 +102,8 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/portfolio': typeof PortfolioRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/api/public/forms/booking': typeof ApiPublicFormsBookingRoute
+  '/api/public/forms/contact': typeof ApiPublicFormsContactRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,6 +115,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/portfolio'
     | '/admin'
+    | '/api/public/forms/booking'
+    | '/api/public/forms/contact'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,6 +126,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/portfolio'
     | '/admin'
+    | '/api/public/forms/booking'
+    | '/api/public/forms/contact'
   id:
     | '__root__'
     | '/'
@@ -116,6 +138,8 @@ export interface FileRouteTypes {
     | '/contact'
     | '/portfolio'
     | '/_authenticated/admin'
+    | '/api/public/forms/booking'
+    | '/api/public/forms/contact'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -126,6 +150,8 @@ export interface RootRouteChildren {
   BookingRoute: typeof BookingRoute
   ContactRoute: typeof ContactRoute
   PortfolioRoute: typeof PortfolioRoute
+  ApiPublicFormsBookingRoute: typeof ApiPublicFormsBookingRoute
+  ApiPublicFormsContactRoute: typeof ApiPublicFormsContactRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -186,6 +212,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/api/public/forms/contact': {
+      id: '/api/public/forms/contact'
+      path: '/api/public/forms/contact'
+      fullPath: '/api/public/forms/contact'
+      preLoaderRoute: typeof ApiPublicFormsContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/forms/booking': {
+      id: '/api/public/forms/booking'
+      path: '/api/public/forms/booking'
+      fullPath: '/api/public/forms/booking'
+      preLoaderRoute: typeof ApiPublicFormsBookingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -208,6 +248,8 @@ const rootRouteChildren: RootRouteChildren = {
   BookingRoute: BookingRoute,
   ContactRoute: ContactRoute,
   PortfolioRoute: PortfolioRoute,
+  ApiPublicFormsBookingRoute: ApiPublicFormsBookingRoute,
+  ApiPublicFormsContactRoute: ApiPublicFormsContactRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
