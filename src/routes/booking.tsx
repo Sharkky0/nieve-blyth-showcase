@@ -5,7 +5,6 @@ import { z } from "zod";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { sendEnquiryEmail } from "@/lib/email.functions";
 import { FadeIn } from "@/components/site/FadeIn";
 import { PackagesList } from "@/components/site/PackagesList";
@@ -36,6 +35,7 @@ const schema = z.object({
   event_type: z.string().trim().max(100).optional().or(z.literal("")),
   preferred_date: z.string().optional().or(z.literal("")),
   message: z.string().trim().max(2000).optional().or(z.literal("")),
+  website: z.string().max(0).optional().or(z.literal("")), // honeypot
 });
 type Form = z.infer<typeof schema>;
 
@@ -53,14 +53,20 @@ function BookingPage() {
     const payload = {
       name: values.name,
       email: values.email,
-      phone: values.phone || null,
-      event_type: values.event_type || null,
-      preferred_date: values.preferred_date || null,
-      message: values.message || null,
+      phone: values.phone || "",
+      event_type: values.event_type || "",
+      preferred_date: values.preferred_date || "",
+      message: values.message || "",
+      website: values.website || "",
     };
-    const { error } = await supabase.from("booking_enquiries").insert(payload);
-    if (error) {
-      toast.error("Couldn't send your enquiry. Please try again.");
+    const res = await fetch("/api/public/forms/booking", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      toast.error(data?.error ?? "Couldn't send your enquiry. Please try again.");
       return;
     }
     try {
@@ -69,10 +75,10 @@ function BookingPage() {
           kind: "booking",
           name: payload.name,
           email: payload.email,
-          phone: payload.phone,
-          event_type: payload.event_type,
-          preferred_date: payload.preferred_date,
-          message: payload.message,
+          phone: payload.phone || null,
+          event_type: payload.event_type || null,
+          preferred_date: payload.preferred_date || null,
+          message: payload.message || null,
         },
       });
     } catch (e) {
@@ -113,6 +119,12 @@ function BookingPage() {
         ) : (
           <FadeIn delay={0.15}>
             <form onSubmit={handleSubmit(onSubmit)} className="mt-16 space-y-8" noValidate>
+              <div aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, overflow: "hidden" }}>
+                <label>
+                  Website
+                  <input type="text" tabIndex={-1} autoComplete="off" {...register("website")} />
+                </label>
+              </div>
               <Field label="Name" error={errors.name?.message}>
                 <input
                   {...register("name")}
