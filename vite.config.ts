@@ -4,6 +4,7 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  nitro: true,
   vite: {
     base: "/",
   },
