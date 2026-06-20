@@ -1,12 +1,14 @@
-import { defineConfig } from "@lovable.dev/vite-tanstack-config";
-import netlify from "@netlify/vite-plugin-tanstack-start";
+import { defineConfig } from "vite";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import viteReact from "@vitejs/plugin-react";
+import { cloudflare } from "@cloudflare/vite-plugin";
+import path from "path";
 
 export default defineConfig({
-  tanstackStart: {
-    server: { entry: "server" },
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
   },
-  vite: {
-    base: "/",
-    plugins: [netlify()],
-  },
+  plugins: [tanstackStart(), cloudflare(), viteReact()],
 });
