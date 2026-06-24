@@ -3,7 +3,7 @@
   "name": "nieveblythphotography",
   "compatibility_date": "2026-06-18",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "dist/server/server.js",
+  "main": "@tanstack/react-start/server-entry",
   "assets": {
     "directory": "dist/client"
   },
