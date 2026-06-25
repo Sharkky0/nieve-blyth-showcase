@@ -6,6 +6,19 @@ export default defineConfig({
     server: { entry: "server" },
   },
   plugins: [
-    cloudflare({ viteEnvironment: { name: "ssr" } }), // Important
+    cloudflare({
+      viteEnvironment: { name: "ssr" },
+      // Force correct output paths
+      wranglerConfig: {
+        main: "dist/server/server.js"
+      }
+    }),
   ],
+  build: {
+    rollupOptions: {
+      input: {
+        server: "src/server.ts"
+      }
+    }
+  }
 });
