@@ -6,8 +6,5 @@
   "main": "@tanstack/react-start/server-entry",
   "assets": {
     "directory": "dist/client"
-  },
-  "observability": {
-    "enabled": true
   }
 }
